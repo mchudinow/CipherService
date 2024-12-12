@@ -10,6 +10,9 @@ namespace CipherService
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            builder.WebHost.UseUrls($"http://*:{port}");
+            builder.Services.AddHealthChecks();
             builder.Services.AddScoped<ICipherService,Services.CipherService>();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -25,6 +28,7 @@ namespace CipherService
             });
             var app = builder.Build();
             app.UseCors("AllowAllOrigins");
+            app.UseHealthChecks("/health");
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
